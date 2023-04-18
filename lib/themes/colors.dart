@@ -23,8 +23,6 @@ const MaterialColor primaryAccent = MaterialColor(_primaryAccentValue, <int, Col
 const int _primaryAccentValue = 0xFFFFFFFF;
 
 
-
-
 const Color fabColor = Color.fromRGBO(77, 141, 185, 1.0);
 const Color backgroundColor = Color.fromRGBO(152, 187, 218, 1.0);
 const Color textFormFieldColor = Color.fromRGBO(224, 225, 231, 1.0);

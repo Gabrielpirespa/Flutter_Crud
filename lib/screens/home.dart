@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/components/test_list_item.dart';
-import 'package:flutter_crud/models/task_dao.dart';
 import 'package:flutter_crud/themes/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../components/loading.dart';
+import '../db/task_dao.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -13,114 +16,89 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: backgroundColor,
-        body: Padding(
-          padding: const EdgeInsets.only(top: 28.0),
-          child: FutureBuilder<List<TestListItem>>(
-            future: TaskDao().findAll(),
-            builder: (context, snapshot) {
-              List<TestListItem>? items = snapshot.data;
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                  {
-                    return Center(
-                      child: Column(
-                        children: const [
-                          CircularProgressIndicator(),
-                          Text("Carregando"),
-                        ],
-                      ),
-                    );
-                  }
-                case ConnectionState.waiting:
-                  {
-                    return Center(
-                      child: Column(
-                        children: const [
-                          CircularProgressIndicator(),
-                          Text("Carregando"),
-                        ],
-                      ),
-                    );
-                  }
-                case ConnectionState.active:
-                  {
-                    return Center(
-                      child: Column(
-                        children: const [
-                          CircularProgressIndicator(),
-                          Text("Carregando"),
-                        ],
-                      ),
-                    );
-                  }
-                case ConnectionState.done:
-                  {
-                    if (snapshot.hasData && items != null) {
-                      if (items.isNotEmpty) {
-                        return CustomScrollView(
-                          slivers: <Widget>[
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 8.0),
-                                child: Text(
-                                  "Lista de Atividades",
-                                  style: TextStyle(
-                                      fontSize: 42,
-                                      color: Colors.white),
-                                ),
-                              ),
+    final mediaQuery = MediaQuery.of(context);
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: Padding(
+        padding: const EdgeInsets.only(top: 38.0,),
+        child: FutureBuilder<List<TestListItem>>(
+          future: TaskDao().findAll(),
+          builder: (context, snapshot) {
+            List<TestListItem>? items = snapshot.data;
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                {
+                  return const Loading();
+                }
+              case ConnectionState.waiting:
+                {
+                  return const Loading();
+                }
+              case ConnectionState.active:
+                {
+                  return const Loading();
+                }
+              case ConnectionState.done:
+                {
+                  if (snapshot.hasData && items != null) {
+                    if (items.isNotEmpty) {
+                      return CustomScrollView(
+                        slivers: <Widget>[
+                          SliverToBoxAdapter(
+                            child: Text(
+                              "Lista de Atividades",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.caveat(textStyle: TextStyle(
+                                  fontSize: 50,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),),
                             ),
-                            SliverList(
-                              delegate: SliverChildListDelegate(
-                                <Widget>[
-                                  ListView.builder(
-                                      itemCount: items.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final TestListItem task = items[index];
-                                        return task;
-                                      }),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                    }
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.error_outline,
-                            size: 128,
-                            color: Colors.white,
                           ),
-                          Text(
-                            "Não há nenhuma tarefa.",
-                            style: TextStyle(fontSize: 32, color: Colors.white),
-                          )
+                          SliverPadding(
+                            padding: EdgeInsets.only(bottom: 64, top: 16),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                      return TestListItem(task: items[index].task, date: items[index].date);
+                                  },
+                                childCount: items.length,
+                              ),
+                            ),
+                          ),
                         ],
-                      ),
-                    );
+                      );
+                    }
                   }
-              }
-            },
-          ),
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.pushNamed(context, "form");
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(
+                          Icons.error_outline,
+                          size: 128,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          "Não há nenhuma tarefa.",
+                          style: TextStyle(fontSize: 32, color: Colors.white),
+                        )
+                      ],
+                    ),
+                  );
+                }
+            }
           },
-          label: Text(
-            "Nova Tarefa",
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: fabColor,
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pushNamed(context, "form").then((value) => setState((){}) );
+        },
+        label: const Text(
+          "Nova Tarefa",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: fabColor,
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/themes/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 ThemeData MyTheme = ThemeData(
   primaryColor: myColor,
@@ -20,4 +21,5 @@ ThemeData MyTheme = ThemeData(
       ),
     ),
   ),
+  textTheme: GoogleFonts.nunitoTextTheme()
 );

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/screens/form_screen.dart';
 import 'package:flutter_crud/screens/home.dart';
+import 'package:flutter_crud/themes/colors.dart';
 import 'package:flutter_crud/themes/my_theme.dart';
+
+import 'components/loading.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: MyTheme,
       initialRoute: "home",
       routes: {
-        "home": (context) => Home(),
+        "home": (context) => const Home(),
         "form": (context) => FormScreen(),
       },
     );
