@@ -16,7 +16,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Padding(
@@ -48,18 +47,18 @@ class _HomeState extends State<Home> {
                             child: Text(
                               "Lista de Atividades",
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.caveat(textStyle: TextStyle(
+                              style: GoogleFonts.caveat(textStyle: const TextStyle(
                                   fontSize: 50,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),),
                             ),
                           ),
                           SliverPadding(
-                            padding: EdgeInsets.only(bottom: 64, top: 16),
+                            padding: const EdgeInsets.only(bottom: 64, top: 16),
                             sliver: SliverList(
                               delegate: SliverChildBuilderDelegate(
                                   (context, index) {
-                                      return TestListItem(task: items[index].task, date: items[index].date);
+                                      return TestListItem(task: items[index].task, date: items[index].date, taskId: items[index].taskId,);
                                   },
                                 childCount: items.length,
                               ),

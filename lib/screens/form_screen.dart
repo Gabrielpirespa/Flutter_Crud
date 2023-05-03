@@ -3,6 +3,7 @@ import 'package:flutter_crud/components/test_list_item.dart';
 import 'package:flutter_crud/db/task_dao.dart';
 import 'package:flutter_crud/themes/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uuid/uuid.dart';
 
 class FormScreen extends StatelessWidget {
   FormScreen({Key? key}) : super(key: key);
@@ -41,31 +42,32 @@ class FormScreen extends StatelessWidget {
                   Padding(
                     padding: mediaQuery.orientation == Orientation.portrait
                         ? const EdgeInsets.only(bottom: 58)
-                        : EdgeInsets.only(bottom: 32),
+                        : const EdgeInsets.only(bottom: 32),
                     child: Text(
                       "Nova Atividade",
                       style: GoogleFonts.caveat(
-                        textStyle: TextStyle(color: Colors.white, fontSize: 54),
+                        textStyle: const TextStyle(color: Colors.white, fontSize: 54),
                       ),
                     ),
                   ),
                   Padding(
                     padding: mediaQuery.orientation == Orientation.portrait
                         ? const EdgeInsets.only(bottom: 64.0)
-                        : EdgeInsets.only(bottom: 32.0),
+                        : const EdgeInsets.only(bottom: 32.0),
                     child: TextFormField(
                       validator: (String? value) {
                         if (validation(value)) {
                           return "Favor inserir uma atividade.";
                         }
+                        return null;
                       },
                       controller: taskController,
                       keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           hintText: "Insira uma atividade",
                           hintStyle: TextStyle(color: Colors.blueGrey)),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
@@ -74,20 +76,21 @@ class FormScreen extends StatelessWidget {
                   Padding(
                     padding: mediaQuery.orientation == Orientation.portrait
                         ? const EdgeInsets.only(bottom: 64.0)
-                        : EdgeInsets.only(bottom: 32.0),
+                        : const EdgeInsets.only(bottom: 32.0),
                     child: TextFormField(
                       controller: dateController,
                       validator: (String? value) {
                         if (validation(value)) {
                           return "Favor inserir uma data de realização.";
                         }
+                        return null;
                       },
                       keyboardType: TextInputType.datetime,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           hintText: "Data de realização",
                           hintStyle: TextStyle(color: Colors.blueGrey)),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
@@ -101,18 +104,27 @@ class FormScreen extends StatelessWidget {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              TaskDao().save(TestListItem(
-                  task: taskController.text, date: dateController.text));
+              TaskDao().save(
+                TestListItem(
+                  task: taskController.text,
+                  date: dateController.text,
+                  taskId: const Uuid().v1(),
+                ),
+              );
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("Criando nova Tarefa",),
+                  behavior: SnackBarBehavior.floating,
+                  margin: EdgeInsets.all(8),
+                  content: Text(
+                    "Tarefa inserida com sucesso",
+                  ),
                 ),
               );
 
               Navigator.pop(context);
             }
           },
-          label: Text(
+          label: const Text(
             "Nova Tarefa",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),

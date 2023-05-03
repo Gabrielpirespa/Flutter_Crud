@@ -3,7 +3,7 @@ import 'package:flutter_crud/components/test_list_item.dart';
 import 'package:flutter_crud/db/database.dart';
 import 'package:sqflite/sqflite.dart';
 
-class TaskDao {
+class TaskDao extends ChangeNotifier {
   // Criar primeiro para depois criar o database.
   static const String _tablename = "taskTable";
   static const String _taskid = "taskID";
@@ -11,9 +11,11 @@ class TaskDao {
   static const String _date = "date";
 
   static const String tableSql = "CREATE TABLE $_tablename("
-      "$_taskid INTEGER PRIMARY KEY, "
+      "$_taskid TEXT, "
       "$_task TEXT, "
       "$_date TEXT)";
+
+  //Lista do Provider
 
   //Primeiro passo é criar as função toMap e toList para facilitar a implementação do CRUD.
 
@@ -21,6 +23,7 @@ class TaskDao {
     print("Convertendo Task em Map: ");
     final Map<String,
         dynamic> taskMap = Map(); // Cria um mapa vazio para inserir os dados a serem passados ao banco.
+    taskMap[_taskid] = testListItem.taskId;
     taskMap[_task] = testListItem.task;
     taskMap[_date] = testListItem.date;
     print("Mapa de tasks $taskMap");
@@ -51,15 +54,8 @@ class TaskDao {
   save (TestListItem task) async{
     print("Iniciando o save: ");
     final Database database = await getDataBase(); //Instância do database.
-    final itemExists = await find(task.taskId); //Procura se o item já existe no banco de dados.
     Map<String,dynamic> taskMap = toMap(task); //Transforma os items recebidos no TextForm para mapa.
-    if(itemExists.isEmpty) { //Se não existir o insere no database.
-      print ("A tarefa não existia.");
-      return await database.insert(_tablename, taskMap); //Salva o mapa recebido no database.
-    } else { //Se existir ele o altera.
-      print("A tarefa já existia.");
-      return await database.update(_tablename, taskMap, where: "$_taskid = ?", whereArgs: [task.taskId]);
-    }
+    return await database.insert(_tablename, taskMap); //Salva o mapa recebido no database.
   }
 
   //Read
@@ -76,7 +72,7 @@ class TaskDao {
 
   //Método find realiza a listagem de uma única atividade do banco de dados, que é encontrada pelo seu id (Primary key).
 
-  Future<List<TestListItem>> find(int? taskId) async{
+  Future<List<TestListItem>> find(String? taskId) async{
     print(" Acessando find: ");
     final Database database = await getDataBase();
     final List<Map<String, dynamic>> result = await database
@@ -87,18 +83,18 @@ class TaskDao {
 
   //Update
 
-  // update (TestListItem task) async{
-  //   final Database database = await getDataBase(); //Instância do database.
-  //   final itemExists = await find(task.taskId); //Procura se o item já existe no banco de dados.
-  //   Map<String,dynamic> taskMap = toMap(task); //Transforma os items recebidos no TextForm para mapa.
-  //   if(itemExists.isNotEmpty) { //Se existir ele o altera.
-  //     database.update(_tablename, taskMap, where: "$_taskid = ?", whereArgs: [task.taskId]);
-  //   }
-  // }
+  update (TestListItem task) async{
+    final Database database = await getDataBase(); //Instância do database.
+    final itemExists = await find(task.taskId); //Procura se o item já existe no banco de dados.
+    Map<String,dynamic> taskMap = toMap(task); //Transforma os items recebidos no TextForm para mapa.
+    if(itemExists.isNotEmpty) { //Se existir ele o altera.
+      database.update(_tablename, taskMap, where: "$_taskid = ?", whereArgs: [task.taskId]);
+    }
+  }
 
   //Delete
 
-  delete(int taskId) async{
+  delete(String? taskId) async{
     print("Deletando tarefa: $taskId");
     final Database database = await getDataBase();
     return database.delete(_tablename, where: "$_taskid = ?", whereArgs: [taskId]);
