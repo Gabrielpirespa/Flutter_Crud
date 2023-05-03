@@ -105,32 +105,38 @@ class FormScreen extends StatelessWidget {
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              Provider.of<TaskProvider>(context).insertInDatabase(
-                taskController.text,
-                dateController.text,
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  behavior: SnackBarBehavior.floating,
-                  margin: EdgeInsets.all(8),
-                  content: Text(
-                    "Tarefa inserida com sucesso",
+        floatingActionButton: Consumer<TaskProvider>(builder:
+            (BuildContext context, TaskProvider provider, Widget? child) {
+          return FloatingActionButton.extended(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                provider.insertInDatabase(
+                  taskController.text,
+                  dateController.text,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    // margin: EdgeInsets.all(8),
+                    width: 240,
+                    content: Text(
+                      "Tarefa inserida com sucesso",
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              );
+                );
 
-              Navigator.pop(context);
-            }
-          },
-          label: const Text(
-            "Nova Tarefa",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: fabColor,
-        ),
+                Navigator.pop(context);
+              }
+            },
+            label: const Text(
+              "Nova Tarefa",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: fabColor,
+          );
+        }),
       ),
     );
   }

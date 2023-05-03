@@ -10,21 +10,17 @@ class TaskProvider extends ChangeNotifier {
   Future insertInDatabase(String activity, String date) async {
     final newTask =
         TaskModel(taskId: const Uuid().v1(), activity: activity, date: date);
-
     tasks.add(newTask);
-
     await TaskDao().save(TaskModel(
         taskId: newTask.taskId,
         activity: newTask.activity,
         date: newTask.date));
-
     notifyListeners();
   }
 
-  Future readFromDatabase() async{
+  Future<List<TaskModel>> readFromDatabase() async{
     final taskList = await TaskDao().findAll();
     tasks = taskList;
-    notifyListeners();
     return tasks;
   }
 
@@ -34,9 +30,8 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future deleteFromDatabase(String taskId, int index) async{
-    final deletedTask = tasks[index].taskId;
-    await TaskDao().delete(deletedTask);
+  Future deleteFromDatabase(String taskId) async{
+    await TaskDao().delete(taskId);
     notifyListeners();
   }
 }
