@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_crud/provider/task_provider.dart';
 import 'package:flutter_crud/screens/form_screen.dart';
 import 'package:flutter_crud/screens/home.dart';
 import 'package:flutter_crud/themes/my_theme.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TaskProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
