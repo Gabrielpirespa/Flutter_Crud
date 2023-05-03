@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/components/test_list_item.dart';
+import 'package:flutter_crud/provider/task_provider.dart';
 import 'package:flutter_crud/themes/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../components/loading.dart';
 import '../db/task_dao.dart';
+import '../provider/task_model.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -20,10 +23,10 @@ class _HomeState extends State<Home> {
       backgroundColor: backgroundColor,
       body: Padding(
         padding: const EdgeInsets.only(top: 38.0,),
-        child: FutureBuilder<List<TestListItem>>(
-          future: TaskDao().findAll(),
+        child: FutureBuilder<dynamic>(
+          future: Provider.of<TaskProvider>(context).readFromDatabase(),
           builder: (context, snapshot) {
-            List<TestListItem>? items = snapshot.data;
+            List<TaskModel>? items = snapshot.data;
             switch (snapshot.connectionState) {
               case ConnectionState.none:
                 {
@@ -58,7 +61,7 @@ class _HomeState extends State<Home> {
                             sliver: SliverList(
                               delegate: SliverChildBuilderDelegate(
                                   (context, index) {
-                                      return TestListItem(task: items[index].task, date: items[index].date, taskId: items[index].taskId,);
+                                      return TestListItem(task: items[index], index: index,);
                                   },
                                 childCount: items.length,
                               ),

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_crud/components/test_list_item.dart';
 import 'package:flutter_crud/db/task_dao.dart';
 import 'package:flutter_crud/themes/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
+import '../provider/task_model.dart';
+import '../provider/task_provider.dart';
 
 class FormScreen extends StatelessWidget {
   FormScreen({Key? key}) : super(key: key);
@@ -46,7 +49,8 @@ class FormScreen extends StatelessWidget {
                     child: Text(
                       "Nova Atividade",
                       style: GoogleFonts.caveat(
-                        textStyle: const TextStyle(color: Colors.white, fontSize: 54),
+                        textStyle:
+                            const TextStyle(color: Colors.white, fontSize: 54),
                       ),
                     ),
                   ),
@@ -104,12 +108,9 @@ class FormScreen extends StatelessWidget {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              TaskDao().save(
-                TestListItem(
-                  task: taskController.text,
-                  date: dateController.text,
-                  taskId: const Uuid().v1(),
-                ),
+              Provider.of<TaskProvider>(context).insertInDatabase(
+                taskController.text,
+                dateController.text,
               );
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

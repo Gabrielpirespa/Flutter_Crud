@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_crud/components/test_list_item.dart';
 import 'package:flutter_crud/db/database.dart';
 import 'package:sqflite/sqflite.dart';
 
-class TaskDao extends ChangeNotifier {
+import '../provider/task_model.dart';
+
+class TaskDao {
   // Criar primeiro para depois criar o database.
   static const String _tablename = "taskTable";
   static const String _taskid = "taskID";
@@ -19,26 +19,26 @@ class TaskDao extends ChangeNotifier {
 
   //Primeiro passo é criar as função toMap e toList para facilitar a implementação do CRUD.
 
-  Map <String, dynamic> toMap(TestListItem testListItem) {
+  Map <String, dynamic> toMap(TaskModel taskModel) {
     print("Convertendo Task em Map: ");
     final Map<String,
         dynamic> taskMap = Map(); // Cria um mapa vazio para inserir os dados a serem passados ao banco.
-    taskMap[_taskid] = testListItem.taskId;
-    taskMap[_task] = testListItem.task;
-    taskMap[_date] = testListItem.date;
+    taskMap[_taskid] = taskModel.taskId;
+    taskMap[_task] = taskModel.activity;
+    taskMap[_date] = taskModel.date;
     print("Mapa de tasks $taskMap");
     return taskMap;
   }
 
-  List<TestListItem> toList(List<Map<String, dynamic>> taskMap) {
+  List<TaskModel> toList(List<Map<String, dynamic>> taskMap) {
     print("Convertendo to List:");
     //Deve criar uma função que recebe o mapa e transforma em lista vazia.
-    final List <TestListItem> taskList = []; // Cria uma lista vazia para receber os valores transformados do mapa.
+    final List <TaskModel> taskList = []; // Cria uma lista vazia para receber os valores transformados do mapa.
     print("Task List vazia $taskList");
     for (Map<String, dynamic> line in taskMap) { //Itera para cada linha do mapa criar um novo TestListItem.
-      final TestListItem task = TestListItem(
+      final TaskModel task = TaskModel(
         taskId: line[_taskid],
-        task: line[_task],
+        activity: line[_task],
         date: line[_date],
       );
       taskList.add(task); //Depois de criado o TestListItem adiciona-o na lista vazia.
@@ -51,7 +51,7 @@ class TaskDao extends ChangeNotifier {
 
   //Create e Update
 
-  save (TestListItem task) async{
+  save (TaskModel task) async{
     print("Iniciando o save: ");
     final Database database = await getDataBase(); //Instância do database.
     Map<String,dynamic> taskMap = toMap(task); //Transforma os items recebidos no TextForm para mapa.
@@ -62,7 +62,7 @@ class TaskDao extends ChangeNotifier {
 
   //Método findAll realiza a listagem de todas as atividades do banco de dados.
 
-  Future<List<TestListItem>> findAll() async{
+  Future<List<TaskModel>> findAll() async{
     print("Acessando o findAll: ");
     final Database database = await getDataBase(); //Instância do banco de dados.
     final List<Map<String,dynamic>> result = await database.query(_tablename); //Cria uma lista de mapas de todos os dados do database.
@@ -72,7 +72,7 @@ class TaskDao extends ChangeNotifier {
 
   //Método find realiza a listagem de uma única atividade do banco de dados, que é encontrada pelo seu id (Primary key).
 
-  Future<List<TestListItem>> find(String? taskId) async{
+  Future<List<TaskModel>> find(String? taskId) async{
     print(" Acessando find: ");
     final Database database = await getDataBase();
     final List<Map<String, dynamic>> result = await database
@@ -83,7 +83,7 @@ class TaskDao extends ChangeNotifier {
 
   //Update
 
-  update (TestListItem task) async{
+  update (TaskModel task) async{
     final Database database = await getDataBase(); //Instância do database.
     final itemExists = await find(task.taskId); //Procura se o item já existe no banco de dados.
     Map<String,dynamic> taskMap = toMap(task); //Transforma os items recebidos no TextForm para mapa.

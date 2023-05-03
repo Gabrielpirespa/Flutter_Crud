@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/db/task_dao.dart';
 import 'package:flutter_crud/themes/colors.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/task_model.dart';
+import '../provider/task_provider.dart';
 
 class TestListItem extends StatefulWidget {
-  final String task;
-  final String date;
-  final String taskId;
+  final TaskModel task;
+  final int index;
+
 
   const TestListItem({
     Key? key,
     required this.task,
-    required this.date,
-    required this.taskId,
+    required this.index,
   }) : super(key: key);
 
   @override
@@ -45,9 +48,9 @@ class _TestListItemState extends State<TestListItem> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        String id = widget.taskId;
-                        updatedTaskController.text = widget.task;
-                        updatedDateController.text = widget.date;
+                        String id = widget.task.taskId;
+                        updatedTaskController.text = widget.task.activity;
+                        updatedDateController.text = widget.task.date;
                         showDialog<String>(
                           context: context,
                           builder: (BuildContext alertContext) => AlertDialog(
@@ -82,10 +85,7 @@ class _TestListItemState extends State<TestListItem> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    TaskDao().update(TestListItem(
-                                        task: updatedTaskController.text,
-                                        date: updatedDateController.text,
-                                        taskId: id));
+                                    Provider.of<TaskProvider>(context).updateFromDatabase(id, updatedTaskController.text, updatedDateController.text);
                                     Navigator.pop(alertContext, "Alterar");
                                   },
                                   child: const Text(
@@ -101,6 +101,7 @@ class _TestListItemState extends State<TestListItem> {
                     ),
                     IconButton(
                         onPressed: () {
+                          String id = widget.task.taskId;
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext alertContext) => AlertDialog(
@@ -110,7 +111,7 @@ class _TestListItemState extends State<TestListItem> {
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      TaskDao().delete(widget.taskId);
+                                      Provider.of<TaskProvider>(context).deleteFromDatabase(id, widget.index);
                                       Navigator.pop(alertContext, "Sim");
                                     },
                                     child: const Text(
@@ -139,14 +140,14 @@ class _TestListItemState extends State<TestListItem> {
                 ),
               ),
               title: Text(
-                widget.task,
+                widget.task.activity,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
-                widget.date,
+                widget.task.date,
                 style: const TextStyle(
                   color: Colors.blue,
                   fontWeight: FontWeight.bold,
