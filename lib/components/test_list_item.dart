@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/themes/colors.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../provider/task_model.dart';
 import '../provider/task_provider.dart';
@@ -8,7 +9,6 @@ import '../provider/task_provider.dart';
 class TestListItem extends StatefulWidget {
   final TaskModel task;
   final int index;
-
 
   const TestListItem({
     Key? key,
@@ -24,6 +24,29 @@ class _TestListItemState extends State<TestListItem> {
   bool _checkbox = false;
   final TextEditingController updatedTaskController = TextEditingController();
   final TextEditingController updatedDateController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCheckedValue();
+  }
+
+  _savedCheckedValue(bool isChecked) async {
+    SharedPreferences prefs = await
+    SharedPreferences.getInstance();
+    setState(() {
+      prefs.setBool(widget.task.taskId, isChecked);
+    });
+  }
+
+  _loadCheckedValue() async {
+    SharedPreferences prefs = await
+    SharedPreferences.getInstance();
+    bool? isChecked = prefs.getBool(widget.task.taskId);
+    setState(() {
+      _checkbox = isChecked ?? false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +221,7 @@ class _TestListItemState extends State<TestListItem> {
               onChanged: (bool? value) {
                 setState(() {
                   _checkbox = !_checkbox;
+                  _savedCheckedValue(_checkbox);
                 });
               }),
         ),
